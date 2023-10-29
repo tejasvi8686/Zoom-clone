@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react'; // Make sure to import React if it's a React component
 import {
   EuiFlexGroup,
   EuiProvider,
@@ -8,23 +9,60 @@ import {
   EuiTextColor,
   EuiButton,
   EuiPanel,
-} from "@elastic/eui";
-import React from "react";
-import { query, where } from "firebase/firestore";
-import animation from "../assets/animation.gif";
-import logo from "../assets/logo.png";
-import { signInWithPopup, GoogleAuthProvider, Auth } from "firebase/auth";
-import { firebaseAuth, userRef } from "../utils/FirebaseConfig";
+} from '@elastic/eui';
+import {
+  query,
+  where,
+  getDocs,
+  addDoc,
+} from 'firebase/firestore';
+import animation from '../assets/animation.gif';
+import logo from '../assets/logo.png';
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  Auth,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { firebaseAuth, userRef } from '../utils/FirebaseConfig';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../app/hooks';
+import { setUser } from '../app/slices/AuthSlice';
 
 function Login() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (currentUser) => {
+      if (currentUser) {
+        navigate('/');
+      }
+    });
+  }, []); // Use useEffect to handle side effects
+
   const login = async () => {
     const provider = new GoogleAuthProvider();
-    const {
-      user: { displayName, email, uid },
-    } = await signInWithPopup(firebaseAuth, provider);
-    if (email) {
-      const firestoreQuery = query(userRef, where("uid", "==", uid));
-      const fetchedusers = await getDocs(firestoreQuery);
+    try {
+      const { user } = await signInWithPopup(firebaseAuth, provider);
+      const { displayName, email, uid } = user;
+
+      if (email) {
+        const firestoreQuery = query(userRef, where('uid', '==', uid));
+        const fetchedUsers = await getDocs(firestoreQuery);
+        if (fetchedUsers.docs.length === 0) {
+          await addDoc(userRef, {
+            uid,
+            name: displayName,
+            email,
+          });
+        }
+      }
+
+      dispatch(setUser({ uid, name: displayName, email }));
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   };
 
@@ -33,13 +71,13 @@ function Login() {
       <EuiFlexGroup
         alignItems="center"
         justifyContent="center"
-        style={{ width: "100vw", height: "100vh" }}
+        style={{ width: '100vw', height: '100vh' }}
       >
         <EuiFlexItem grow={false}>
           <EuiPanel paddingSize="xl">
             <EuiFlexGroup justifyContent="center" alignItems="center">
               <EuiFlexItem>
-                <EuiImage src={animation} alt="logo" />
+                <EuiImage src={animation} alt="animation" />
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiImage src={logo} alt="logo" size="230" />
