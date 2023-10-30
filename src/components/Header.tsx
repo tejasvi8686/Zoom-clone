@@ -12,7 +12,7 @@ import {
 } from "@elastic/eui";
 
 const Header = () => {
-  const   logout = () => {}
+  const   logout = (e) => {}
   const navigate = useNavigate();
   const location = useLocation();
   const username = useAppSelector((zoom) => zoom.auth.userInfo?.name);
