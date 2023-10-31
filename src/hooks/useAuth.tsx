@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { firebaseAuth } from '../utils/FirebaseConfig';
 import { setUser } from '../app/slices/AuthSlice';
 
+
 const useAuth = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const useAuth = () => {
         console.log(currentUser);
         
       if (!currentUser) {
-        navigate('/');
+        navigate("/login");
       } else {
         dispatch(
           setUser({

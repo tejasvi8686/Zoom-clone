@@ -4,8 +4,15 @@ import "@elastic/eui/dist/eui_theme_light.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import { Routes, Route } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
 
 const App = () => {
+ const dispatch = useAppDispatch();
+ const isDarkTheme = useAppSelector(zoom => zoom.auth.isDarkTheme);
+
+ 
+ 
+
   const overrides = {
     color: {
       LIGHT: { Primary: "#0b5cff" },

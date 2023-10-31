@@ -10,15 +10,19 @@ import {
   EuiText,
   EuiTextColor,
 } from "@elastic/eui";
+import { firebaseAuth } from "../utils/FirebaseConfig";
+import { signOut } from "firebase/auth";
 
 const Header = () => {
-  const   logout = (e) => {}
   const navigate = useNavigate();
   const location = useLocation();
   const username = useAppSelector((zoom) => zoom.auth.userInfo?.name);
   const [breadCrumbs, setBreadCrumbs] = useState([{ text: "Dashboard" }]);
   const [isResponsive, setIsResponsive] = useState(false);
   const dispatch = useDispatch();
+  const logout = () => {
+    signOut(firebaseAuth);
+  };
   const section = [
     {
       items: [
@@ -53,8 +57,28 @@ const Header = () => {
           direction="row"
           style={{ gap: "2vw" }}
         >
-          <EuiFlexItem>
-<EuiButtonIcon onClick={logout} iconType="lock" display="fill" size="s" aria-label="logout-button"/>
+          <EuiFlexItem grow={false} style={{ flexBasis: "fit-content" }}>
+            <EuiButtonIcon
+              onClick={logout}
+              iconType="sun"
+              display="fill"
+              size="s"
+              color="warning"
+              aria-label="logout-button"
+            />
+          </EuiFlexItem>
+          <EuiFlexItem
+            grow={false}
+            style={{ flexBasis: "fit-content" }}
+          >
+             <EuiButtonIcon
+              onClick={logout}
+              iconType="moon"
+              display="fill"
+              size="s"
+              color="ghost"
+              aria-label="logout-button"
+            />
           </EuiFlexItem>
         </EuiFlexGroup>,
       ],
