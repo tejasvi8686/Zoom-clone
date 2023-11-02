@@ -10,8 +10,6 @@ const App = () => {
  const dispatch = useAppDispatch();
  const isDarkTheme = useAppSelector(zoom => zoom.auth.isDarkTheme);
 
- 
- 
 
   const overrides = {
     color: {
