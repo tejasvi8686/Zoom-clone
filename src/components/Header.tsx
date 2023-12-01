@@ -12,16 +12,25 @@ import {
 } from "@elastic/eui";
 import { firebaseAuth } from "../utils/FirebaseConfig";
 import { signOut } from "firebase/auth";
+import { changeTheme } from "../app/slices/AuthSlice";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = useAppSelector((zoom) => zoom.auth.userInfo?.name);
   const [breadCrumbs, setBreadCrumbs] = useState([{ text: "Dashboard" }]);
+  const isDarkTheme = useAppSelector((zoomApp) => zoomApp.auth.isDarkTheme);
   const [isResponsive, setIsResponsive] = useState(false);
   const dispatch = useDispatch();
   const logout = () => {
     signOut(firebaseAuth);
+  };
+
+  const invertTheme = () => {
+    const theme = localStorage.getItem("zoom-theme");
+    localStorage.setItem("zoom-theme", theme === "light" ? "dark" : "light");
+    dispatch(changeTheme({ isDarkTheme: !isDarkTheme }));
   };
   const section = [
     {
@@ -58,25 +67,32 @@ const Header = () => {
           style={{ gap: "2vw" }}
         >
           <EuiFlexItem grow={false} style={{ flexBasis: "fit-content" }}>
+            {isDarkTheme ? (
+              <EuiButtonIcon
+                onClick={invertTheme}
+                iconType="sun"
+                display="fill"
+                size="s"
+                color="warning"
+                aria-label="invert-theme-button"
+              />
+            ) : (
+              <EuiButtonIcon
+                onClick={invertTheme}
+                iconType="moon"
+                display="fill"
+                size="s"
+                color="ghost"
+                aria-label="logout-button"
+              />
+            )}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false} style={{ flexBasis: "fit-content" }}>
             <EuiButtonIcon
               onClick={logout}
-              iconType="sun"
+              iconType="lock"
               display="fill"
               size="s"
-              color="warning"
-              aria-label="logout-button"
-            />
-          </EuiFlexItem>
-          <EuiFlexItem
-            grow={false}
-            style={{ flexBasis: "fit-content" }}
-          >
-             <EuiButtonIcon
-              onClick={logout}
-              iconType="moon"
-              display="fill"
-              size="s"
-              color="ghost"
               aria-label="logout-button"
             />
           </EuiFlexItem>
