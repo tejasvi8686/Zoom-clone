@@ -19,7 +19,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     changeTheme: (state, action) => {
-      state.isDarkTheme = action.payload; // Removed .isDarkTheme from action.payload
+      state.isDarkTheme = action.payload.isDarkTheme; 
     },
     setUser: (state, action) => {
       state.userInfo = action.payload;
@@ -30,3 +30,4 @@ export const authSlice = createSlice({
 export const { setUser, changeTheme } = authSlice.actions; // Added changeTheme to exported actions
 
 export default authSlice.reducer;
+ 
