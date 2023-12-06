@@ -14,6 +14,10 @@ import { firebaseAuth } from "../utils/FirebaseConfig";
 import { signOut } from "firebase/auth";
 import { changeTheme } from "../app/slices/AuthSlice";
 import { useSelector } from "react-redux";
+import {
+  getCreateMettingBreadCrumbs
+
+} from "../utils/breadcrumbs";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -26,6 +30,11 @@ const Header = () => {
   const logout = () => {
     signOut(firebaseAuth);
   };
+
+  useEffect ( () => {
+    const {pathname} = location;
+    if(pathname === "/create") setBreadCrumbs( getCreateMettingBreadCrumbs(navigate))
+  }, [location,navigate]);
 
   const invertTheme = () => {
     const theme = localStorage.getItem("zoom-theme");
@@ -110,6 +119,47 @@ const Header = () => {
             </h2>
           </EuiText>
         </Link>,
+      ],
+    },
+    {
+      items: [
+        <EuiFlexGroup
+          justifyContent="center"
+          alignItems="center"
+          direction="row"
+          style={{ gap: "2vw" }}
+        >
+          <EuiFlexItem grow={false} style={{ flexBasis: "fit-content" }}>
+            {isDarkTheme ? (
+              <EuiButtonIcon
+                onClick={invertTheme}
+                iconType="sun"
+                display="fill"
+                size="s"
+                color="warning"
+                aria-label="invert-theme-button"
+              />
+            ) : (
+              <EuiButtonIcon
+                onClick={invertTheme}
+                iconType="moon"
+                display="fill"
+                size="s"
+                color="ghost"
+                aria-label="logout-button"
+              />
+            )}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false} style={{ flexBasis: "fit-content" }}>
+            <EuiButtonIcon
+              onClick={logout}
+              iconType="lock"
+              display="fill"
+              size="s"
+              aria-label="logout-button"
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>,
       ],
     },
   ];

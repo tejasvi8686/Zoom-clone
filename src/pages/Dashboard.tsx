@@ -31,7 +31,7 @@ const Dashbord = () => {
             <EuiCard
               icon={<EuiImage size="5rem" alt="icon" src={dashboard1} />}
               title={`Creating Meeting`}
-              description="create a new meeting and invite pepole"
+              description="Create a new meeting and invite pepole"
               onClick={() => navigate("/create")}
               paddingSize="xl"
             />
