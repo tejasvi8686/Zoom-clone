@@ -14,10 +14,7 @@ import { firebaseAuth } from "../utils/FirebaseConfig";
 import { signOut } from "firebase/auth";
 import { changeTheme } from "../app/slices/AuthSlice";
 import { useSelector } from "react-redux";
-import {
-  getCreateMettingBreadCrumbs
-
-} from "../utils/breadcrumbs";
+import { getCreateMettingBreadCrumbs } from "../utils/breadcrumbs";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -31,10 +28,11 @@ const Header = () => {
     signOut(firebaseAuth);
   };
 
-  useEffect ( () => {
-    const {pathname} = location;
-    if(pathname === "/create") setBreadCrumbs( getCreateMettingBreadCrumbs(navigate))
-  }, [location,navigate]);
+  useEffect(() => {
+    const { pathname } = location;
+    if (pathname === "/create")
+      setBreadCrumbs(getCreateMettingBreadCrumbs(navigate));
+  }, [location, navigate]);
 
   const invertTheme = () => {
     const theme = localStorage.getItem("zoom-theme");
@@ -59,7 +57,7 @@ const Header = () => {
           {username ? (
             <EuiText>
               <h3>
-                <EuiTextColor color="#fff">Hello, </EuiTextColor>
+                <EuiTextColor color="white">Hello, </EuiTextColor>
                 <EuiTextColor color="#0b5cff">{username}</EuiTextColor>
               </h3>
             </EuiText>
@@ -83,7 +81,7 @@ const Header = () => {
                 display="fill"
                 size="s"
                 color="warning"
-                aria-label="invert-theme-button"
+                aria-label="theme-button-light"
               />
             ) : (
               <EuiButtonIcon
@@ -92,7 +90,7 @@ const Header = () => {
                 display="fill"
                 size="s"
                 color="ghost"
-                aria-label="logout-button"
+                aria-label="theme-button-dark"
               />
             )}
           </EuiFlexItem>
@@ -137,7 +135,7 @@ const Header = () => {
                 display="fill"
                 size="s"
                 color="warning"
-                aria-label="invert-theme-button"
+                aria-label="theme-button-light"
               />
             ) : (
               <EuiButtonIcon
@@ -146,7 +144,7 @@ const Header = () => {
                 display="fill"
                 size="s"
                 color="ghost"
-                aria-label="logout-button"
+                aria-label="theme-button-dark"
               />
             )}
           </EuiFlexItem>
@@ -176,7 +174,11 @@ const Header = () => {
       />
       <EuiHeader
         style={{ minHeight: "8vh" }}
-        sections={[{ breadcrumbs: breadCrumbs }]}
+        sections={[
+          {
+            breadcrumbs: breadCrumbs,
+          },
+        ]}
       />
     </>
   );
