@@ -1,20 +1,28 @@
-import React, { useState } from "react";
-import Header from "../components/Header";
 import { EuiFlexGroup, EuiForm, EuiSpacer } from "@elastic/eui";
+import { addDoc } from "firebase/firestore";
+import moment from "moment";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../app/hooks";
+import CreateMeetingButtons from "../components/FormComponents/CreateMeetingButtons";
+import MeetingDateField from "../components/FormComponents/MeetingDataField";
 import MeetingNameField from "../components/FormComponents/MeetingNameField";
-import MeetingUsersField from "../components/FormComponents/MeetingUsersField";
+import MeetingUserField from "../components/FormComponents/MeetingUsersField";
+import { meetingsRef } from "../utils/FirebaseConfig";
+import Header from "../components/Header";
 import useAuth from "../hooks/useAuth";
 import useFetchUsers from "../hooks/useFetchUsers";
-import moment from "moment";
-import MeetingDateField from "../components/FormComponents/MeetingDataField";
-import CreateMeetingButtons from "../components/FormComponents/CreateMeetingButtons";
-import { FieldErrorType } from "../utils/Types";
+import { generateMeetingID } from "../utils/generateMeetingId";
+import { FieldErrorType,UserType } from "../utils/Types";
 
-const OneOnOneMeeting = () => {
+export default function OneOnOneMeeting() {
   useAuth();
   const [users] = useFetchUsers();
+  const uid = useAppSelector((zoomApp) => zoomApp.auth.userInfo?.uid);
+  const navigate = useNavigate();
+
   const [meetingName, setMeetingName] = useState("");
-  const [selectedUser, setSelectedUser] = useState([]);
+  const [selectedUser, setSelectedUser] = useState<Array<UserType>>([]);
   const [startDate, setStartDate] = useState(moment());
   const [showErrors, setShowErrors] = useState<{
     meetingName: FieldErrorType;
@@ -29,26 +37,49 @@ const OneOnOneMeeting = () => {
       message: [],
     },
   });
-  const onUserChange = (selectedOptions: any) => {
+
+  const onUserChange = (selectedOptions: Array<UserType>) => {
     setSelectedUser(selectedOptions);
   };
+
   const validateForm = () => {
+    const showErrorsClone = { ...showErrors };
     let errors = false;
     if (!meetingName.length) {
-      showErrors.meetingName.show = true;
-      showErrors.meetingName.message = ["Please Enter Meeting Name"];
+      showErrorsClone.meetingName.show = true;
+      showErrorsClone.meetingName.message = ["Please Enter Meeting Name"];
       errors = true;
     } else {
-      showErrors.meetingName.show = false;
-      showErrors.meetingName.message = [];
+      showErrorsClone.meetingName.show = false;
+      showErrorsClone.meetingName.message = [];
     }
-
-    setShowErrors(showErrors);
+    if (!selectedUser.length) {
+      showErrorsClone.meetingUser.show = true;
+      showErrorsClone.meetingUser.message = ["Please Select a User"];
+      errors = true;
+    } else {
+      showErrorsClone.meetingUser.show = false;
+      showErrorsClone.meetingUser.message = [];
+    }
+    setShowErrors(showErrorsClone);
     return errors;
   };
 
-  const createMeeting = () => {
+  const createMeeting = async () => {
     if (!validateForm()) {
+      const meetingId = generateMeetingID();
+      await addDoc(meetingsRef, {
+        createdBy: uid,
+        meetingId,
+        meetingName,
+        meetingType: "1-on-1",
+        invitedUsers: [selectedUser[0].uid],
+        meetingDate: startDate.format("L"),
+        maxUsers: 1,
+        status: true,
+      });
+    
+      navigate("/");
     }
   };
 
@@ -71,8 +102,10 @@ const OneOnOneMeeting = () => {
             value={meetingName}
             setMeetingName={setMeetingName}
           />
-          <MeetingUsersField
+          <MeetingUserField
             label="Invite User"
+            isInvalid={showErrors.meetingUser.show}
+            error={showErrors.meetingUser.message}
             options={users}
             onChange={onUserChange}
             selectedOptions={selectedUser}
@@ -82,12 +115,9 @@ const OneOnOneMeeting = () => {
           />
           <MeetingDateField selected={startDate} setStartDate={setStartDate} />
           <EuiSpacer />
-
           <CreateMeetingButtons createMeeting={createMeeting} />
         </EuiForm>
       </EuiFlexGroup>
     </div>
   );
-};
-
-export default OneOnOneMeeting;
+}

@@ -2,10 +2,10 @@ import { getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../app/hooks";
 import { userRef } from "../utils/FirebaseConfig";
-import { userType } from "../utils/Types";
+import { UserType } from "../utils/Types";
 
 function useFetchUsers() {
-  const [users, setUsers] = useState<Array<userType>>([]);
+  const [users, setUsers] = useState<Array<UserType>>([]);
   const uid = useAppSelector((zoom) => zoom.auth.userInfo?.uid);
 
   useEffect(() => {
@@ -13,10 +13,10 @@ function useFetchUsers() {
       const getUser = async () => {
         const firestoreQuery = query(userRef, where("uid", "!=", uid));
         const data = await getDocs(firestoreQuery);
-        const firebaseUsers: Array<userType> = [];
+        const firebaseUsers: Array<UserType> = [];
 
         data.forEach((user) => {
-          const userData: userType = user.data() as userType;
+          const userData: UserType = user.data() as UserType;
           firebaseUsers.push({
             ...userData,
             label: userData.name,
